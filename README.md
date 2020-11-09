@@ -5,7 +5,7 @@ This is a employee management program that stores detailed information that can 
 
 ### Project Objective:
 
-This is a content management system built with MySQL, node and inuirer to retreive and store data.
+This is a content management system built with MySQL, node and inuirer to retreive and store data~.
 
 ### Areas of focus:
     Content Management System development
