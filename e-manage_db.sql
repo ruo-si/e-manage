@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS e-manage_db;
+DROP DATABASE IF EXISTS e_manage_db;
 
-CREATE DATABASE e-manage_db;
+CREATE DATABASE e_manage_db;
 
-USE e-manage_db;
+USE e_manage_db;
 
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT,
@@ -12,19 +12,19 @@ CREATE TABLE department (
 
 CREATE TABLE role (
   id INT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(30) NOT NULL,
-  salary DECIMAL(10,2)NOT NULL,
-  department_id INT NOT NULL,
+  title VARCHAR(30),
+  salary DECIMAL(7.0),
+  department_id INT(10),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE employee (
   id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
-  role_id INT NOT NULL,
-  manager_id INT,
-  PRIMARY KEY (id) NULL,
+  last_name VARCHAR(30),
+  role_id INT(10),
+  manager_id INT(10) DEFAULT NULL,
+  PRIMARY KEY (id)
 );
 
 
