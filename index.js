@@ -34,75 +34,164 @@ function startApp() {
     // prompt options
     .prompt({
 
-      name: "startAppOptions",
+      name: "userChoice",
       type: "list",
       message: "what do you like to do?",
       choices: [
         "View All Employees",
         "View Employees by Department",
-        "View Employees by Manager",
+        "View Employees by Role",
         "Add an Employee",
-        "Remove Employee",
         "Update Employee Role",
         "Update Employee Manager",
+        "Remove Employee",
         "Quit"
       ]
     })
     .then(function (answer) {
 
       // direct with function call based on user answer
-      switch (answer.startAppOptions) {
+      switch (answer.userChoice) {
 
-        case "View All Employees" || "View Employees by Department" || "View Employees by Manager":
-          viewEmployee(answer.startAppOptions);
+        case "View all Employees":
+          viewAll()
           break;
 
-        case "Add Employee":
-          addEmployee();
+        case "View Departments":
+          viewDepartments()
+          break;
+
+        case "View Roles":
+          viewRole()
+          break;
+
+        case "Add an Employee":
+          addEmployee()
+          break;
+
+        case "Update Employee Role":
+          updateEmployeeRole()
+          break;
+
+        case "Update Employee Manager":
+          updateEmployeeManager();
           break;
 
         case "Remove Employee":
           removeEmployee();
           break;
 
-        case "Update Employee Role" || "Update Employee Manager":
-          updateEmployee(answer.startAppOptions);
-          break;
-
         default:
-          endConnection();
+          connection.end()
+          break;
       };
 
     });
 };
 
+// function to read data & print all employees
+function viewAll() {
+  connection.query("SELECT * FROM employee", function (err, res) {
 
-// function to read data
-function viewEmployee(userSelctedOption) {
-  // read data with SELECT and different parameters
+    // print table in console
+    console.table(res);
 
-  switch (userSelctedOption){
-    
-    case "View Employees by Department":
-      viewByDpt();
-      break;
+    // call startApp()
+    startApp();
+  })
 
-    case "View Employees by Manager":
-      viewByManager();
-      break;
+};
 
-    default:
-      viewAll()
-  }
+// function to read data print by department
+function viewDepartments() {
+  connection.query("SELECT * FROM department", function (err, res) {
 
-  // call startApp()
+    // print table in console
+    console.table(res);
+
+    // call startApp()
+    startApp();
+  })
+
+};
+
+// function to read data print by role
+function viewRole() {
+  connection.query("SELECT * FROM role", function (err, res) {
+
+    // print table in console
+    console.table(res);
+
+    // call startApp()
+    startApp();
+  })
+
 };
 
 // function to add data
 function addEmployee() {
-  // collect : first name, last name, role, manager
-  // add to database
-  // call startApp
+
+
+  // prompt and collect : first name, last name, role, manager
+  inquirer
+    .prompt([
+      {
+        name: "firstName",
+        type: "input",
+        message: "Please Insert first name of employee?"
+      },
+      {
+        name: "lastName",
+        type: "input",
+        message: "Please insert last name of employee?"
+      },
+      {
+        name: "roleId",
+        type: "number",
+        message: "Please provide roleID of new employee \n 1. Sales Lead \n 2. Lead Engineer \n 3. Legal Team Lead \n 4. Accountant \n 5. Salesperson \n 6. Software Engineer \n 7. Lawyer",
+        validate: function (value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          console.log("please enter a number as ID!")
+          return false;
+        }
+      },
+      {
+        name: "managerId",
+        type: "number",
+        message: "Please insert the manager id of new employee?",
+        validate: function (value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          console.log("please enter a number as ID!")
+          return false;
+        }
+      }
+    ])
+    .then(function (answer) {
+      // add to database
+      connection.query(
+
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+        [
+          answer.firstName,
+          answer.lastName,
+          answer.roleId,
+          answer.managerId || NULL
+        ],
+        function (err) {
+          if (err)
+            throw err;
+          console.log(answer.first_name +" was succssfully logged into the system!")
+
+          // call startApp
+          startApp();
+        }
+      );
+    });
+
 };
 
 // function to delete data
@@ -111,30 +200,37 @@ function removeEmployee() {
   inquirer
     .prompt([
       {
-        name: "first_name",
+        name: "firstName",
         type: "input",
         message: "Please insert the first name of the employee?"
       },
       {
-        name: "last_name",
+        name: "lastName",
         type: "input",
         message: "Please insert the last name of the employee"
       }
     ])
     .then(function (answer) {
 
-      connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?", [`{answer.first_name}`, `{answer.last_name}`]),
+      connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?",
+        [
+          answer.firstName,
+          answer.lastName
+        ],
         function (err, res) {
           if (err) throw err;
+
           console.log(res.affectedRows + " employee removed!\n");
+
+          // call startApp()
+          startApp();
         }
-      // call startApp()
-      startApp()
+      );
     });
 };
 
 // function to update data
-function updateEmployee() {
+function updateEmployeeRole() {
 
   // options to update data
   // options to set data

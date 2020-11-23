@@ -13,6 +13,7 @@ This is a content management system built with MySQL, node and inuirer to retrei
     Functional scripts
     Implementation of node, inquirer and supported with SQL database organization
     Display qualified results 
+    The use of primary key and foreign keys
 
 ### Project Repository Link:
 https://github.com/rialee/e-manage
