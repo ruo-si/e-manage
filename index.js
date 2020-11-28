@@ -1,23 +1,7 @@
 // dependencies
-var mysql = require("mysql");
+// var mysql = require("mysql");
 var inquirer = require("inquirer");
-
-// establish PORT connection
-var connection = mysql.createConnection({
-  host: "localhost",
-
-  // port
-  PORT: 8080,
-
-  // username
-  user: "root",
-
-  // password
-  password: "password",
-
-  // name of the db to access
-  database: "e_manage_db"
-});
+const connection = require("./model/connection")
 
 // start connection
 connection.connect(function (err) {
@@ -57,12 +41,12 @@ function startApp() {
           viewAll()
           break;
 
-        case "View Departments":
-          viewDepartments()
+        case "View By Departments":
+          viewByDepartments()
           break;
 
-        case "View Roles":
-          viewRole()
+        case "View By Roles":
+          viewByRole()
           break;
 
         case "Add an Employee":
@@ -82,7 +66,7 @@ function startApp() {
           break;
 
         default:
-          connection.end()
+          endConnection();
           break;
       };
 
@@ -91,6 +75,9 @@ function startApp() {
 
 // function to read data & print all employees
 function viewAll() {
+  // display message
+  console.log("Fetching all employee data ... \n");
+
   connection.query("SELECT * FROM employee", function (err, res) {
 
     // print table in console
@@ -103,7 +90,10 @@ function viewAll() {
 };
 
 // function to read data print by department
-function viewDepartments() {
+function viewByDepartments() {
+  // display message
+  console.log("Fetching all departments data ... \n");
+
   connection.query("SELECT * FROM department", function (err, res) {
 
     // print table in console
@@ -116,7 +106,11 @@ function viewDepartments() {
 };
 
 // function to read data print by role
-function viewRole() {
+function viewByRole() {
+
+  // display message
+  console.log("Fetching all role data ... \n");
+
   connection.query("SELECT * FROM role", function (err, res) {
 
     // print table in console
@@ -172,10 +166,14 @@ function addEmployee() {
       }
     ])
     .then(function (answer) {
+
+      // display message
+      console.log("Inserting employee data ... \n");
+
       // add to database
       connection.query(
 
-        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) SET (?, ?, ?, ?)",
         [
           answer.firstName,
           answer.lastName,
@@ -185,7 +183,7 @@ function addEmployee() {
         function (err) {
           if (err)
             throw err;
-          console.log(answer.first_name +" was succssfully logged into the system!")
+          console.log(answer.first_name + " was succssfully logged into the system!")
 
           // call startApp
           startApp();
@@ -197,6 +195,7 @@ function addEmployee() {
 
 // function to delete data
 function removeEmployee() {
+
   // provide options of person to delete
   inquirer
     .prompt([
@@ -214,6 +213,9 @@ function removeEmployee() {
       }
     ])
     .then(function (answer) {
+
+      // display message
+      console.log("Deleting employee data ... \n");
 
       connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?",
         [
@@ -237,11 +239,19 @@ function updateEmployeeRole() {
 
   // options to update data
   // options to set data
+
+  // display message
+  console.log("Updating employee data ... \n");
+
   // call startApp
-}
+  startApp();
+};
 
 // quit
 function endConnection() {
+
+  // display message
+  console.log("Program exiting ... \n");
 
   // terminate connection connection.end()
   connection.end()
