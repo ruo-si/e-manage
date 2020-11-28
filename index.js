@@ -1,6 +1,6 @@
 // dependencies
-// var mysql = require("mysql");
 var inquirer = require("inquirer");
+// const Choices = require("inquirer/lib/objects/choices");
 const connection = require("./model/connection")
 
 // start connection
@@ -37,15 +37,15 @@ function startApp() {
       // direct with function call based on user answer
       switch (answer.userChoice) {
 
-        case "View all Employees":
+        case "View All Employees":
           viewAll()
           break;
 
-        case "View By Departments":
+        case "View Employees by Department":
           viewByDepartments()
           break;
 
-        case "View By Roles":
+        case "View Employees by Role":
           viewByRole()
           break;
 
@@ -75,10 +75,11 @@ function startApp() {
 
 // function to read data & print all employees
 function viewAll() {
+
   // display message
   console.log("Fetching all employee data ... \n");
 
-  connection.query("SELECT * FROM employee", function (err, res) {
+  connection.query("SELECT first_name, last_name, title, salary FROM employee INNER JOIN role ON employee.role_id=role.id", function (err, res) {
 
     // print table in console
     console.table(res);
@@ -91,17 +92,62 @@ function viewAll() {
 
 // function to read data print by department
 function viewByDepartments() {
-  // display message
-  console.log("Fetching all departments data ... \n");
 
-  connection.query("SELECT * FROM department", function (err, res) {
+  // ask what the user would like to do:
+  inquirer
+    // prompt options
+    .prompt({
 
-    // print table in console
-    console.table(res);
+      name: "deptChoice",
+      type: "list",
+      message: "Which department would you like to view?",
+      choices: [
+        "Sales",
+        "Engineering",
+        "Finance",
+        "Legal",
+      ]
+    })
+    .then(function (answer) {
 
-    // call startApp()
-    startApp();
-  })
+      // direct department to view
+      switch (answer.deptChoice) {
+
+        case "Sales":
+          pullDeptData(1)
+          break;
+
+        case "Engineering":
+          pullDeptData(2)
+          break;
+
+        case "Finance":
+          pullDeptData(3)
+          break;
+
+        case "Legal":
+          pullDeptData(4)
+          break;
+
+        default:
+          viewAll();
+          break;
+      };
+    });
+
+  function pullDeptData(roleId) {
+    // display message
+    console.log("Fetching employee by department data ... \n");
+
+    connection.query("SELECT * FROM department", function (err, res) {
+
+      // print table in console
+      console.table(res);
+
+      // call startApp()
+      startApp();
+    })
+  };
 
 };
 
@@ -142,7 +188,7 @@ function addEmployee() {
       {
         name: "roleId",
         type: "number",
-        message: "Please provide roleID of new employee \n 1. Sales Lead \n 2. Lead Engineer \n 3. Legal Team Lead \n 4. Accountant \n 5. Salesperson \n 6. Software Engineer \n 7. Lawyer",
+        message: "Please provide roleID of new employee \n 1. Sales Lead \n 2. Lead Engineer \n 3. Legal Team Lead \n 4. Accountant \n 5. Salesperson \n 6. Software Engineer \n 7. Lawyer \n",
         // validate
         validate: function (value) {
           if (isNaN(value) === false) {
@@ -196,7 +242,64 @@ function addEmployee() {
 // function to delete data
 function removeEmployee() {
 
-  // provide options of person to delete
+  // get a list of all employees
+  connection.query("SELECT first_name, last_name FROM employee", function (err, res) {
+    if (err) throw err;
+
+    // provide options of person to delete
+    inquirer
+      .prompt([
+        {
+          name: "removeChoice",
+          type: "rawlist",
+          choices: function () {
+
+            // print out each available name in employee table
+            var choiceArray = [];
+            for (var i = 0; i < res.length; i++) {
+              choiceArray.push(`${res[i].first_name} ${res[i].last_name}`);
+            }
+            return choiceArray;
+          },
+          message: "Which employee would you like to remove from the system?"
+        },
+      ])
+      .then(function (answer) {
+
+        // display message
+        console.log("Deleting employee data ... \n");
+        console.log(answer)
+
+        // get first and last name from answer
+        removeName = answer.removeChoice;
+        nameArr = removeName.split(" ");
+
+        firstName = nameArr[0];
+        lastName = nameArr[1];
+
+        // delete from database
+        connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?",
+          [
+            firstName,
+            lastName
+          ],
+          function (err, res) {
+            if (err) throw err;
+
+            console.log(`${firstName} ${lastName} was successfully removed from the system!\n`);
+
+            // call startApp()
+            startApp();
+          }
+        );
+      });
+  })
+};
+
+// function to update data
+function updateEmployeeRole() {
+
+  // provide options of person update data
   inquirer
     .prompt([
       {
@@ -210,38 +313,38 @@ function removeEmployee() {
         type: "input",
         message: "Please insert the last name of the employee"
         // validate
+      },
+      {
+        name: "updateInfo",
+        type: "list",
+        message: "Which information would you like to update?",
+        choices: [
+          "First Name", "Last Name", "Department", "Role", "Salary", "Manager"
+        ],
+
       }
     ])
     .then(function (answer) {
+      // options to update data
+
 
       // display message
-      console.log("Deleting employee data ... \n");
+      console.log("Updating employee data ... \n")
 
-      connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?",
+      connection.query(
+
+        "UPDATE ? SET ? WHERE ?",
         [
-          answer.firstName,
-          answer.lastName
+
+          answer.updateInfo
+
         ],
-        function (err, res) {
+        function (err, data) {
           if (err) throw err;
-
-          console.log(res.affectedRows + " employee removed!\n");
-
-          // call startApp()
-          startApp();
+          console.log("Employee information updated!\n")
         }
       );
     });
-};
-
-// function to update data
-function updateEmployeeRole() {
-
-  // options to update data
-  // options to set data
-
-  // display message
-  console.log("Updating employee data ... \n");
 
   // call startApp
   startApp();
