@@ -149,6 +149,7 @@ function addEmployee() {
         name: "roleId",
         type: "number",
         message: "Please provide roleID of new employee \n 1. Sales Lead \n 2. Lead Engineer \n 3. Legal Team Lead \n 4. Accountant \n 5. Salesperson \n 6. Software Engineer \n 7. Lawyer",
+        // validate
         validate: function (value) {
           if (isNaN(value) === false) {
             return true;
@@ -203,11 +204,13 @@ function removeEmployee() {
         name: "firstName",
         type: "input",
         message: "Please insert the first name of the employee?"
+        // validate
       },
       {
         name: "lastName",
         type: "input",
         message: "Please insert the last name of the employee"
+        // validate
       }
     ])
     .then(function (answer) {
