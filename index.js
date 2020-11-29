@@ -5,7 +5,9 @@ require("console.table");
 
 // start connection
 connection.connect(function (err) {
+
   if (err) throw err;
+
   // call the runApp function after the connection is established
   startApp();
 });
@@ -15,9 +17,7 @@ function startApp() {
 
   // ask what the user would like to do:
   inquirer
-    // prompt options
     .prompt({
-
       name: "userChoice",
       type: "list",
       message: "What would you like to do? \n",
@@ -101,6 +101,7 @@ function viewAll() {
 
   let query = "SELECT employee.id AS employeeID, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department FROM employee JOIN role ON role_id = role.id JOIN department ON role.department_id = department.id"
 
+   // fetch table data
   connection.query(query, function (err, res) {
 
     // print table in console
@@ -120,7 +121,7 @@ function viewDepartments() {
 
   let query = "SELECT department.id, department.name AS department FROM department name"
 
-  // configure table data
+  // fetch table data
   connection.query(query, function (err, res) {
 
     // print table in console
@@ -141,6 +142,7 @@ function viewRoles() {
 
   let query = "SELECT role.id, role.title, department.name AS department FROM role JOIN department ON role.department_id = department.id"
 
+  // fetch table data
   connection.query(query, function (err, res) {
 
     // print table in console
@@ -215,6 +217,7 @@ function addEmployee() {
         function (err) {
           if (err)
             throw err;
+            
           console.log(answer.first_name + " was succssfully logged into the system! \n")
 
           // call startApp
@@ -249,6 +252,7 @@ function addDepartment() {
         function (err) {
           if (err)
             throw err;
+
           console.log("new department was succssfully created in the system! \n")
 
           // call startApp
@@ -310,6 +314,7 @@ function addRole() {
         function (err) {
           if (err)
             throw err;
+
           console.log("new role was succssfully created in the system! \n")
 
           // call startApp
@@ -498,7 +503,6 @@ function removeEmployee() {
 
         // display message
         console.log("Deleting employee data ... \n");
-        console.log(answer)
 
         // get first and last name from answer
         removeName = answer.removeChoice;
