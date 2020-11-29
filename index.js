@@ -36,13 +36,14 @@ function startApp() {
         "Exit"
       ]
     })
-    .then(function (answer) {
 
+    .then(function (answer) {
       // direct with function call based on user answer
       switch (answer.userChoice) {
 
         case "View All Employees":
-          viewAll()
+          viewAll();
+          startApp();
           break;
 
         case "View All Departments":
@@ -89,7 +90,6 @@ function startApp() {
           endConnection();
           break;
       };
-
     });
 };
 
@@ -99,13 +99,19 @@ function viewAll() {
   // display message
   console.log("Fetching all employee data ... \n");
 
-  let query = "SELECT employee.id AS employeeID, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department FROM employee JOIN role ON role_id = role.id JOIN department ON role.department_id = department.id"
+  let query =
+    `SELECT emp.id, CONCAT (emp.first_name, ' ', emp.last_name) AS employee, role.title, role.salary, 
+    CONCAT (mgr.first_name, ' ', mgr.last_name) AS manager, department.name AS department 
+    FROM e_manage_db.employee emp INNER JOIN e_manage_db.employee mgr ON emp.manager_id = Mgr.id 
+    LEFT JOIN role ON emp.role_id = role.id 
+    LEFT JOIN department ON role.department_id = department.id`
 
-   // fetch table data
+  // fetch table data
   connection.query(query, function (err, res) {
 
     // print table in console
-    console.table(res);
+    console.log(`\n`)
+    console.table(res)
 
     // call startApp()
     startApp();
@@ -119,12 +125,13 @@ function viewDepartments() {
   // display message
   console.log("Fetching department data ... \n");
 
-  let query = "SELECT department.id, department.name AS department FROM department name"
+  let query = "SELECT department.id, department.name AS department FROM department"
 
   // fetch table data
   connection.query(query, function (err, res) {
 
     // print table in console
+    console.log(`\n`)
     console.table(res);
 
     // call startApp()
@@ -146,6 +153,7 @@ function viewRoles() {
   connection.query(query, function (err, res) {
 
     // print table in console
+    console.log(`\n`)
     console.table(res);
 
     // call startApp()
@@ -173,7 +181,7 @@ function addEmployee() {
       {
         name: "roleId",
         type: "number",
-        message: "Please provide roleID of new employee \n 1. Sales Lead \n 2. Lead Engineer \n 3. Legal Team Lead \n 4. Accountant \n 5. Salesperson \n 6. Software Engineer \n 7. Lawyer \n",
+        message: "Please provide roleID of new employee \n",
 
         // check input = number
         validate: function (value) {
@@ -212,13 +220,13 @@ function addEmployee() {
           answer.firstName,
           answer.lastName,
           answer.roleId,
-          answer.managerId || NULL
+          answer.manager || NULL
         ],
         function (err) {
           if (err)
             throw err;
-            
-          console.log(answer.first_name + " was succssfully logged into the system! \n")
+
+          console.log(answer.firstName + " " + answer.lastName + " was succssfully logged into the system! \n")
 
           // call startApp
           startApp();
@@ -368,7 +376,6 @@ function updateEmployeeRole() {
 
         // display message
         console.log("Updating role data ... \n");
-        console.log(answer)
 
         // get first and last name from answer
         updateName = answer.updateChoice;
@@ -442,7 +449,6 @@ function updateEmployeeManager() {
 
         // display message
         console.log("Updating manager data ... \n");
-        console.log(answer)
 
         // get first and last name from answer
         updateName = answer.updateChoice;
