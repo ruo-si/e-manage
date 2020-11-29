@@ -5,7 +5,7 @@ function viewAll() {
     // display message
     console.log("Fetching all employee data ... \n");
 
-    connection.query("SELECT first_name, last_name, title, salary FROM employee INNER JOIN role ON employee.role_id=role.id", function (err, res) {
+    connection.query("SELECT exployee.id, employee.first_name, employee.last_name, role.title, role.salary FROM employee LEFT JOIN role ON employee.role_id=role.id", function (err, res) {
 
         // print table in console
         console.table(res);
@@ -277,6 +277,114 @@ function addDepartment() {
 
 };
 
+// function to update data
+function updateEmployeeRole() {
+
+    // provide options of person update data
+    inquirer
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "Please insert the first name of the employee?"
+                // validate
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "Please insert the last name of the employee"
+                // validate
+            },
+            {
+                name: "updateInfo",
+                type: "list",
+                message: "Which information would you like to update?",
+                choices: [
+                    "First Name", "Last Name", "Department", "Role", "Salary", "Manager"
+                ],
+
+            }
+        ])
+        .then(function (answer) {
+            // options to update data
+
+
+            // display message
+            console.log("Updating employee data ... \n")
+
+            connection.query(
+
+                "UPDATE ? SET ? WHERE ?",
+                [
+
+                    answer.updateInfo
+
+                ],
+                function (err, data) {
+                    if (err) throw err;
+                    console.log("Employee information updated!\n")
+                }
+            );
+        });
+
+    // call startApp
+    startApp();
+};
+
+// function to update data
+function updateEmployeeManager() {
+
+    // provide options of person update data
+    inquirer
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "Please insert the first name of the employee?"
+                // validate
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "Please insert the last name of the employee"
+                // validate
+            },
+            {
+                name: "updateInfo",
+                type: "list",
+                message: "Which information would you like to update?",
+                choices: [
+                    "First Name", "Last Name", "Department", "Role", "Salary", "Manager"
+                ],
+
+            }
+        ])
+        .then(function (answer) {
+            // options to update data
+
+
+            // display message
+            console.log("Updating employee data ... \n")
+
+            connection.query(
+
+                "UPDATE ? SET ? WHERE ?",
+                [
+
+                    answer.updateInfo
+
+                ],
+                function (err, data) {
+                    if (err) throw err;
+                    console.log("Employee information updated!\n")
+                }
+            );
+        });
+
+    // call startApp
+    startApp();
+};
+
 // function to remove employee
 function removeEmployee() {
 
@@ -335,7 +443,7 @@ function removeEmployee() {
 };
 
 // function to remove department
-function removeEmployee() {
+function removeDepartment() {
 
     // get a list of all employees
     connection.query("SELECT first_name, last_name FROM employee", function (err, res) {
@@ -446,60 +554,6 @@ function removeRole() {
                 );
             });
     })
-};
-
-// function to update data
-function updateEmployeeRole() {
-
-    // provide options of person update data
-    inquirer
-        .prompt([
-            {
-                name: "firstName",
-                type: "input",
-                message: "Please insert the first name of the employee?"
-                // validate
-            },
-            {
-                name: "lastName",
-                type: "input",
-                message: "Please insert the last name of the employee"
-                // validate
-            },
-            {
-                name: "updateInfo",
-                type: "list",
-                message: "Which information would you like to update?",
-                choices: [
-                    "First Name", "Last Name", "Department", "Role", "Salary", "Manager"
-                ],
-
-            }
-        ])
-        .then(function (answer) {
-            // options to update data
-
-
-            // display message
-            console.log("Updating employee data ... \n")
-
-            connection.query(
-
-                "UPDATE ? SET ? WHERE ?",
-                [
-
-                    answer.updateInfo
-
-                ],
-                function (err, data) {
-                    if (err) throw err;
-                    console.log("Employee information updated!\n")
-                }
-            );
-        });
-
-    // call startApp
-    startApp();
 };
 
 // quit
