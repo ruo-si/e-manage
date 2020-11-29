@@ -18,7 +18,7 @@ This is a content management system built with MySQL, node and inuirer to retrei
 ### Project Repository Link:
 https://github.com/rialee/e-manage
 
-Project video in assets folder.
+Demo video saved in /assets folder.
 
 ### License
 MIT
