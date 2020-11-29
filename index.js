@@ -43,7 +43,6 @@ function startApp() {
 
         case "View All Employees":
           viewAll();
-          startApp();
           break;
 
         case "View All Departments":
@@ -94,7 +93,7 @@ function startApp() {
 };
 
 // function to read data & print all employees
-function viewAll() {
+async function viewAll() {
 
   // display message
   console.log("Fetching all employee data ... \n");
@@ -107,7 +106,7 @@ function viewAll() {
     LEFT JOIN department ON role.department_id = department.id`
 
   // fetch table data
-  connection.query(query, function (err, res) {
+  await connection.query(query, function (err, res) {
 
     // print table in console
     console.log(`\n`)
@@ -120,7 +119,7 @@ function viewAll() {
 };
 
 // function to read data print by department
-function viewDepartments() {
+async function viewDepartments() {
 
   // display message
   console.log("Fetching department data ... \n");
@@ -128,7 +127,7 @@ function viewDepartments() {
   let query = "SELECT department.id, department.name AS department FROM department"
 
   // fetch table data
-  connection.query(query, function (err, res) {
+  await connection.query(query, function (err, res) {
 
     // print table in console
     console.log(`\n`)
@@ -142,15 +141,15 @@ function viewDepartments() {
 };
 
 // function to read data print by role
-function viewRoles() {
+async function viewRoles() {
 
   // display message
   console.log("Fetching role data ... \n");
 
-  let query = "SELECT role.id, role.title, department.name AS department FROM role JOIN department ON role.department_id = department.id"
+  let query = "SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id"
 
   // fetch table data
-  connection.query(query, function (err, res) {
+  await connection.query(query, function (err, res) {
 
     // print table in console
     console.log(`\n`)
@@ -180,7 +179,7 @@ function addEmployee() {
       },
       {
         name: "roleId",
-        type: "number",
+        type: "input",
         message: "Please provide roleID of new employee \n",
 
         // check input = number
@@ -194,7 +193,7 @@ function addEmployee() {
       },
       {
         name: "manager",
-        type: "number",
+        type: "input",
         message: "Please insert the manager id of this new employee? \n",
 
         // check input = number
@@ -283,7 +282,7 @@ function addRole() {
       },
       {
         name: "newSalary",
-        type: "number",
+        type: "input",
         message: "Please enter the salary for this role \n",
 
         // check input = number
@@ -359,7 +358,7 @@ function updateEmployeeRole() {
         },
         {
           name: "newRole",
-          type: "number",
+          type: "input",
           message: "Please insert the new role id of this new employee. \n",
 
           // check input = number
@@ -432,7 +431,7 @@ function updateEmployeeManager() {
         },
         {
           name: "newManager",
-          type: "number",
+          type: "input",
           message: "Please insert the new manager id of this new employee? \n",
 
           // check input = number
