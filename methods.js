@@ -300,7 +300,7 @@ function startApp() {
           function (err) {
             if (err)
               throw err;
-              
+  
             console.log("new role was succssfully created in the system! \n")
   
             // call startApp
@@ -489,7 +489,6 @@ function startApp() {
   
           // display message
           console.log("Deleting employee data ... \n");
-          console.log(answer)
   
           // get first and last name from answer
           removeName = answer.removeChoice;
